@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Herbalist & Alchemist × Shopify</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #008060;
+  --dark-green: #004c3f;
+  --light-green: #b5e4ca;
+  --green-bg: #e3f1eb;
+  --black: #1a1a1a;
+  --white: #ffffff;
+  --gray-50: #f7f7f8;
+  --gray-100: #e8e8e8;
+  --gray-200: #d2d2d2;
+  --gray-500: #6d7175;
+  --gray-700: #3a3a3a;
+  --red: #e5484d;
+  --orange: #f5a623;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; overflow: hidden; background: #1a1a1a; color: #1a1a1a; -webkit-font-smoothing: antialiased; }
+.slide-container { position: relative; width: 100vw; height: 100vh; }
+.slide {
+  position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 60px 80px; opacity: 0; transform: translateX(40px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none; overflow: hidden; z-index: 1;
+}
+.slide > *:not(.circle):not(.logo) { position: relative; z-index: 2; }
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: all; }
+.slide.prev { opacity: 0; transform: translateX(-40px); }
+.bg-white { background: var(--white); color: var(--black); }
+.bg-dark { background: var(--black); color: var(--white); }
+.bg-green { background: var(--green); color: var(--white); }
+.bg-gradient { background: linear-gradient(135deg, var(--dark-green) 0%, var(--green) 50%, #00a67e 100%); color: var(--white); }
+.bg-soft { background: var(--gray-50); color: var(--black); }
+.bg-green-light { background: var(--green-bg); color: var(--black); }
+
+.logo { position: absolute; top: 28px; left: 40px; height: 28px; opacity: 0.7; }
+.bg-white .logo svg path, .bg-white .logo svg polygon,
+.bg-soft .logo svg path, .bg-soft .logo svg polygon,
+.bg-green-light .logo svg path, .bg-green-light .logo svg polygon { fill: var(--black); }
+.bg-dark .logo svg path, .bg-dark .logo svg polygon,
+.bg-green .logo svg path, .bg-green .logo svg polygon,
+.bg-gradient .logo svg path, .bg-gradient .logo svg polygon { fill: var(--white); }
+
+h1 { font-size: 3.2rem; font-weight: 900; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 16px; }
+h2 { font-size: 2.4rem; font-weight: 800; letter-spacing: -1.5px; line-height: 1.15; margin-bottom: 12px; }
+h3 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 8px; }
+p { font-size: 1.1rem; line-height: 1.6; font-weight: 400; max-width: 700px; }
+.subtitle { font-size: 1.3rem; font-weight: 400; opacity: 0.8; margin-bottom: 24px; }
+.label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; opacity: 0.6; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; width: 100%; margin-top: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; width: 100%; margin-top: 16px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; width: 100%; margin-top: 16px; }
+
+.card {
+  background: var(--white); border-radius: 16px; padding: 28px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.active .card { opacity: 1; transform: translateY(0); }
+.active .card:nth-child(1) { transition-delay: 0.1s; }
+.active .card:nth-child(2) { transition-delay: 0.2s; }
+.active .card:nth-child(3) { transition-delay: 0.3s; }
+.active .card:nth-child(4) { transition-delay: 0.4s; }
+
+.card-green {
+  background: var(--green-bg); border: 1px solid var(--light-green);
+  border-radius: 16px; padding: 28px;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.active .card-green { opacity: 1; transform: translateY(0); }
+.active .card-green:nth-child(1) { transition-delay: 0.1s; }
+.active .card-green:nth-child(2) { transition-delay: 0.2s; }
+.active .card-green:nth-child(3) { transition-delay: 0.3s; }
+
+.card-bordered {
+  background: var(--white); border: 2px solid var(--gray-100); border-radius: 16px; padding: 28px;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.active .card-bordered { opacity: 1; transform: translateY(0); }
+.active .card-bordered:nth-child(1) { transition-delay: 0.1s; }
+.active .card-bordered:nth-child(2) { transition-delay: 0.2s; }
+.active .card-bordered:nth-child(3) { transition-delay: 0.3s; }
+.active .card-bordered:nth-child(4) { transition-delay: 0.4s; }
+
+.card h3, .card-bordered h3 { font-size: 1.1rem; }
+.card p, .card-green p, .card-bordered p { font-size: 0.95rem; line-height: 1.5; opacity: 0.85; }
+.card .icon, .card-bordered .icon { font-size: 1.8rem; margin-bottom: 12px; }
+
+.flow-steps {
+  display: flex; align-items: center; gap: 12px; margin-top: 24px; flex-wrap: wrap;
+}
+.flow-step {
+  background: var(--white); border-radius: 12px; padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; min-width: 120px;
+  border: 1px solid var(--gray-100);
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.active .flow-step { opacity: 1; transform: translateY(0); }
+.active .flow-step:nth-child(1) { transition-delay: 0.1s; }
+.active .flow-step:nth-child(2) { transition-delay: 0.2s; }
+.active .flow-step:nth-child(3) { transition-delay: 0.25s; }
+.active .flow-step:nth-child(4) { transition-delay: 0.3s; }
+.active .flow-step:nth-child(5) { transition-delay: 0.35s; }
+.active .flow-step:nth-child(6) { transition-delay: 0.4s; }
+.active .flow-step:nth-child(7) { transition-delay: 0.45s; }
+.active .flow-step:nth-child(8) { transition-delay: 0.5s; }
+.active .flow-step:nth-child(9) { transition-delay: 0.55s; }
+.active .flow-step:nth-child(10) { transition-delay: 0.6s; }
+.active .flow-step:nth-child(11) { transition-delay: 0.65s; }
+.flow-step .icon { font-size: 1.5rem; margin-bottom: 6px; }
+.flow-step p { font-size: 0.8rem; font-weight: 600; }
+.flow-arrow { font-size: 1.2rem; color: var(--green); font-weight: 700; }
+.bg-green .flow-step, .bg-gradient .flow-step { background: rgba(255,255,255,0.15); border-color: transparent; }
+.bg-green .flow-arrow, .bg-gradient .flow-arrow { color: rgba(255,255,255,0.5); }
+
+.tag {
+  display: inline-block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle;
+}
+.tag-green { background: var(--light-green); color: var(--dark-green); }
+
+.circle {
+  position: absolute; border-radius: 50%; opacity: 0.04;
+  animation: float 8s ease-in-out infinite; z-index: 0;
+}
+.bg-dark .circle { background: var(--white); }
+.bg-white .circle, .bg-soft .circle, .bg-green-light .circle { background: var(--green); }
+.bg-green .circle, .bg-gradient .circle { background: var(--white); opacity: 0.06; }
+.c1 { width: 300px; height: 300px; top: -80px; right: -60px; animation-delay: 0s; }
+.c2 { width: 200px; height: 200px; bottom: -40px; left: -60px; animation-delay: -3s; }
+.c3 { width: 150px; height: 150px; top: 40%; right: 15%; animation-delay: -5s; }
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.03); }
+}
+
+.progress-bar {
+  position: fixed; bottom: 0; left: 0; height: 3px;
+  background: var(--green); transition: width 0.5s ease; z-index: 200;
+}
+.slide-counter {
+  position: fixed; bottom: 12px; right: 24px; font-size: 0.75rem;
+  font-weight: 600; opacity: 0.4; z-index: 200; color: var(--gray-500);
+}
+
+.slide-selector {
+  position: fixed; top: 16px; right: 24px; display: flex; gap: 6px; z-index: 200;
+}
+.slide-dot {
+  width: 10px; height: 10px; border-radius: 50%; background: rgba(0,0,0,0.15);
+  cursor: pointer; transition: all 0.3s ease; border: none; padding: 0;
+}
+.slide-dot.active-dot { background: var(--green); transform: scale(1.3); }
+.slide-dot:hover { background: var(--green); opacity: 0.7; }
+
+.list-check { list-style: none; padding: 0; }
+.list-check li {
+  padding: 6px 0 6px 28px; position: relative; font-size: 0.95rem; line-height: 1.5;
+}
+.list-check li::before {
+  content: '✓'; position: absolute; left: 0; color: var(--green);
+  font-weight: 800; font-size: 1rem;
+}
+
+@media (max-width: 900px) {
+  .slide { padding: 40px 28px; }
+  h1 { font-size: 2.2rem; }
+  h2 { font-size: 1.8rem; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .flow-steps { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+}
+</style>
+</head>
+<body>
+
+<div class="slide-container">
+
+<!-- SLIDE 1: Title -->
+<div class="slide bg-gradient active" data-index="0" style="background: linear-gradient(135deg, #004c3f 0%, #008060 50%, #00a67e 100%); color: #ffffff; opacity: 1; transform: none;">
+  <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
+  <p class="label">Shopify Plus Demo</p>
+  <h1>Herbalist &<br>Alchemist</h1>
+  <p class="subtitle">Platform demo for B2B + DTC commerce, Sage 300 integration, and compliance automation</p>
+  <p style="opacity:0.6; font-size: 0.9rem; margin-top: 24px;">April 7, 2026 · Brandon Anderson, Solutions Engineer</p>
+</div>
+
+<!-- SLIDE 2: Agenda -->
+<div class="slide bg-white" data-index="1">
+  <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
+  <p class="label">Today's Agenda</p>
+  <h2>What We'll Cover</h2>
+  <p class="subtitle" style="margin-bottom:20px;">Focused on your requirements — live demos, honest answers, real costs.</p>
+  <div class="flow-steps">
+    <div class="flow-step"><div class="icon">🛒</div><p>DTC &<br>Checkout</p></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><div class="icon">🏢</div><p>B2B<br>Portal</p></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><div class="icon">⚠️</div><p>Compliance<br>& Hazmat</p></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><div class="icon">🔗</div><p>Sage 300<br>Integration</p></div>
+  </div>
+</div>
+
+<!-- SLIDE 3: DTC & Checkout + Subscribe & Save -->
+<div class="slide bg-soft" data-index="2">
+  <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
+  <p class="label">Solving Today's Pain</p>
+  <h2>DTC, Checkout & Subscribe</h2>
+  <div class="grid-3">
+    <div class="card-green">
+      <h3>🟣 Shop Pay — One Tap Checkout</h3>
+      <p>Replaces the broken PayPal Express loop. One tap, done. 50% higher conversion than guest checkout.</p>
+    </div>
+    <div class="card-green">
+      <h3>🔄 Subscribe & Save</h3>
+      <p>The "Chewy experience" — monthly tincture delivery, customer self-management, pause/skip/cancel. Feeds your forecasting for what to pour and package.</p>
+    </div>
+    <div class="card-green">
+      <h3>📧 Abandoned Cart Recovery</h3>
+      <p>Automated email with the exact cart. One click to come back and buy. Add discount incentives. Track recovered revenue.</p>
+    </div>
+  </div>
+  <div class="grid-3" style="margin-top:20px;">
+    <div class="card-green">
+      <h3>🏠 Billing Address — Solved</h3>
+      <p>Customers update billing addresses directly in their account. No forms, no calling customer service.</p>
+    </div>
+    <div class="card-green">
+      <h3>🎨 Theme Editor — No-Code</h3>
+      <p>Update content, banners, product images without a developer. No risk of breaking the site.</p>
+    </div>
+    <div class="card-green">
+      <h3>🔒 Fully Managed Platform</h3>
+      <p>No hosting, no security patches, no plugin conflicts. 99.99% uptime on Plus. 24/7 priority support + dedicated MSM.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: B2B -->
+<div class="slide bg-green-light" data-index="3">
+  <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
+  <p class="label">60% of Revenue</p>
+  <h2>B2B on Shopify Plus</h2>
+  <p class="subtitle" style="color:var(--gray-700);">From "basically the retail site with wholesale prices" to a full wholesale commerce platform.</p>
+  <div class="grid-4">
+    <div class="card-bordered">
+      <div class="icon">🏢</div>
+      <h3>Company Accounts</h3>
+      <p>Each practitioner and health food store gets their own profile, buyers, and shipping locations.</p>
+    </div>
+    <div class="card-bordered">
+      <div class="icon">💲</div>
+      <h3>Custom Price Lists</h3>
+      <p>Practitioner pricing vs. health food store pricing. Set once per segment. Practitioner-only products.</p>
+    </div>
+    <div class="card-bordered">
+      <div class="icon">📋</div>
+      <h3>Net Terms & PO</h3>
+      <p>Net 30/60 with automated payment reminders. Purchase order numbers at checkout. No manual tracking.</p>
+    </div>
+    <div class="card-bordered">
+      <div class="icon">⚡</div>
+      <h3>Quick Order</h3>
+      <p>Practitioners reorder the same 15 products monthly — quick order list, set quantities, done. One-click reorder.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Compliance & Hazmat -->
+<div class="slide bg-soft" data-index="4">
+  <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
+  <p class="label">Regulatory Compliance — Automated</p>
+  <h2>Prop 65, FDA & Hazmat DOT</h2>
+  <div class="grid-3">
+    <div class="card-bordered">
+      <h3>⚠️ California Prop 65</h3>
+      <p>Products tagged "CA Prop 65" show warnings on the product page automatically. At checkout, extension checks shipping state — California + flagged product = warning displayed.</p>
+    </div>
+    <div class="card-bordered">
+      <h3>🚛 Hazmat DOT Shipping</h3>
+      <p>Three automated layers: product page notice, Shopify Flow flags hazmat orders + notifies fulfillment, order rules auto-split at 194 oz limit.</p>
+    </div>
+    <div class="card-bordered">
+      <h3>💊 FDA Disclaimers</h3>
+      <p>"These statements have not been evaluated by the FDA" — stored as product metafield, rendered on every product page by the theme. One setup, 250 products.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: Hazmat Flow -->
+<div class="slide bg-soft" data-index="5">
+  <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
+  <p class="label">DOT Hazmat — How It Works</p>
+  <h2>Automated Shipment Splitting</h2>
+  <p class="subtitle" style="color:var(--gray-700);">Max 194 oz per box for alcohol-based extracts — handled automatically.</p>
+  <div class="flow-steps">
+    <div class="flow-step"><div class="icon">🏷️</div><p>Product tagged<br>"Hazmat DOT"</p></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><div class="icon">🛒</div><p>Customer<br>places order</p></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><div class="icon">⚡</div><p>Shopify Flow<br>flags order</p></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><div class="icon">✂️</div><p>Order Rules<br>split at 194 oz</p></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><div class="icon">📦</div><p>Separate<br>fulfillments</p></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><div class="icon">📬</div><p>Multiple<br>tracking #s</p></div>
+  </div>
+</div>
+
+<!-- SLIDE 8: Sage 300 Integration -->
+<div class="slide bg-white" data-index="6">
+  <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
+  <p class="label">Integration Architecture</p>
+  <h2>Sage 300 ↔ Shopify Plus</h2>
+  <div style="display:flex; justify-content:center; margin-top:16px;">
+    <img src="sage-300-integration-diagram.png" alt="Sage 300 Integration Architecture" style="max-width:85%; max-height:65vh; border-radius:12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+  </div>
+</div>
+
+<!-- SLIDE 9: Avalara + Migration -->
+<div class="slide bg-white" data-index="7">
+  <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
+  <p class="label">Additional Integrations</p>
+  <h2>Avalara & Migration</h2>
+  <div class="grid-2">
+    <div class="card-green">
+      <h3>🧾 Avalara <span class="tag tag-green">Native</span></h3>
+      <p>Direct integration — no middleware needed. Real-time tax calculation, multi-state compliance, filing thresholds.</p>
+      <p style="margin-top:12px; font-weight:600;">New: Exemption Certificate Management for B2B — practitioners self-submit resale certificates. Auto-validated.</p>
+    </div>
+    <div class="card-green">
+      <h3>📦 WooCommerce Migration</h3>
+      <ul class="list-check" style="margin-top:8px;">
+        <li>Products, customers, orders, blog via Matrixify</li>
+        <li>301 redirects via bulk CSV import</li>
+        <li>Current site stays live during build</li>
+        <li>Timeline: 3–5 months</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div><!-- /slide-container -->
+
+<div class="slide-selector" id="selector"></div>
+<div class="progress-bar" id="progress"></div>
+<div class="slide-counter" id="counter"></div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+let current = 0;
+const total = slides.length;
+let touchStartX = 0;
+
+const selector = document.getElementById('selector');
+for (let i = 0; i < total; i++) {
+  const dot = document.createElement('button');
+  dot.className = 'slide-dot' + (i === 0 ? ' active-dot' : '');
+  dot.addEventListener('click', e => { e.stopPropagation(); goTo(i); });
+  selector.appendChild(dot);
+}
+const dots = document.querySelectorAll('.slide-dot');
+
+function goTo(n) {
+  if (n < 0 || n >= total) return;
+  const goingForward = n > current;
+  slides.forEach(s => s.classList.remove('active', 'prev'));
+  if (goingForward) slides[current].classList.add('prev');
+  current = n;
+  slides[current].classList.add('active');
+  dots.forEach((d, i) => d.classList.toggle('active-dot', i === current));
+  document.getElementById('progress').style.width = ((current / (total - 1)) * 100) + '%';
+  document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+  const bg = slides[current].classList.contains('bg-dark') || slides[current].classList.contains('bg-green') || slides[current].classList.contains('bg-gradient');
+  document.getElementById('counter').style.color = bg ? 'rgba(255,255,255,0.4)' : 'var(--gray-500)';
+  dots.forEach(d => d.style.background = bg ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)');
+  dots[current].style.background = bg ? '#fff' : 'var(--green)';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+});
+
+document.addEventListener('click', e => {
+  if (e.target.closest('.slide-selector')) return;
+  if (e.clientX > window.innerWidth / 2) goTo(current + 1);
+  else goTo(current - 1);
+});
+
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) { diff > 0 ? goTo(current + 1) : goTo(current - 1); }
+});
+
+goTo(0);
+</script>
+</body>
+</html>
